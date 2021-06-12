@@ -7,15 +7,30 @@
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
+#from . import utils
+import PyQt5
+from labelme.config import get_config
+from labelme.label_file import LabelFile
+from labelme.label_file import LabelFileError
+from labelme.logger import logger
+from labelme.shape import Shape
+from labelme.widgets import BrightnessContrastDialog
+from labelme.widgets import Canvas
+from labelme.widgets import LabelDialog
+from labelme.widgets import LabelListWidget
+from labelme.widgets import LabelListWidgetItem
+from labelme.widgets import ToolBar
+from labelme.widgets import UniqueLabelQListWidget
+from labelme.widgets import ZoomWidget
 
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
-
-
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from labelme.widgets import Canvas
 from . resources_rc import *
 
 class Ui_MainWindow(object):
+
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
@@ -26,8 +41,16 @@ class Ui_MainWindow(object):
         font = QFont()
         font.setFamily(u"Segoe UI")
         font.setPointSize(10)
-        font.setBold(False)
-        font.setItalic(False)
+        font.setBold(True)
+       # font.setWeight(75)
+        ###################################################
+
+
+
+
+        # fitWindow.setChecked(Qt.Checked)
+
+        ################################################################################
         self.styleSheet.setFont(font)
         self.styleSheet.setStyleSheet(u"/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "\n"
@@ -549,6 +572,10 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "")
+
+
+
+
         self.appMargins = QVBoxLayout(self.styleSheet)
         self.appMargins.setSpacing(0)
         self.appMargins.setObjectName(u"appMargins")
@@ -590,8 +617,8 @@ class Ui_MainWindow(object):
         self.titleLeftApp.setGeometry(QRect(70, 8, 160, 20))
         font1 = QFont()
         font1.setFamily(u"Segoe UI Semibold")
-        font1.setPointSize(12)
-        font1.setBold(False)
+        font1.setPointSize(13)
+        font1.setBold(True)
         font1.setItalic(False)
         self.titleLeftApp.setFont(font1)
         self.titleLeftApp.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
@@ -666,6 +693,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_8.addWidget(self.btn_home)
 
     #OPEN
+
         self.btn_open = QPushButton(self.topMenu)
         self.btn_open.setObjectName(u"btn_open")
         sizePolicy.setHeightForWidth(self.btn_open.sizePolicy().hasHeightForWidth())
@@ -757,17 +785,17 @@ class Ui_MainWindow(object):
         self.verticalLayout_8.addWidget(self.btn_edit)
 
     # Delete Polygons
-        self.btn_deletepolygons = QPushButton(self.topMenu)
-        self.btn_deletepolygons.setObjectName(u"btn_deletepolygons")
-        sizePolicy.setHeightForWidth(self.btn_deletepolygons.sizePolicy().hasHeightForWidth())
-        self.btn_deletepolygons.setSizePolicy(sizePolicy)
-        self.btn_deletepolygons.setMinimumSize(QSize(0, 45))
-        self.btn_deletepolygons.setFont(font)
-        self.btn_deletepolygons.setCursor(QCursor(Qt.PointingHandCursor))
-        self.btn_deletepolygons.setLayoutDirection(Qt.LeftToRight)
-        self.btn_deletepolygons.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-remove.png);")
+        self.btn_deletePoint = QPushButton(self.topMenu)
+        self.btn_deletePoint.setObjectName(u"btn_deletePoint")
+        sizePolicy.setHeightForWidth(self.btn_deletePoint.sizePolicy().hasHeightForWidth())
+        self.btn_deletePoint.setSizePolicy(sizePolicy)
+        self.btn_deletePoint.setMinimumSize(QSize(0, 45))
+        self.btn_deletePoint.setFont(font)
+        self.btn_deletePoint.setCursor(QCursor(Qt.PointingHandCursor))
+        self.btn_deletePoint.setLayoutDirection(Qt.LeftToRight)
+        self.btn_deletePoint.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-remove.png);")
 
-        self.verticalLayout_8.addWidget(self.btn_deletepolygons)
+        self.verticalLayout_8.addWidget(self.btn_deletePoint)
 
         # Undo
         self.btn_undo = QPushButton(self.topMenu)
@@ -779,6 +807,7 @@ class Ui_MainWindow(object):
         self.btn_undo.setCursor(QCursor(Qt.PointingHandCursor))
         self.btn_undo.setLayoutDirection(Qt.LeftToRight)
         self.btn_undo.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-action-undo.png);")
+
 
         self.verticalLayout_8.addWidget(self.btn_undo)
 
@@ -924,6 +953,13 @@ class Ui_MainWindow(object):
         self.btn_adjustments.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-equalizer.png);")
 
         self.verticalLayout_11.addWidget(self.btn_adjustments)
+
+        self.horizontalSlider = QSlider(self.extraTopMenu)
+        self.horizontalSlider.setObjectName(u"horizontalSlider")
+        self.horizontalSlider.setStyleSheet(u"")
+        self.horizontalSlider.setOrientation(Qt.Horizontal)
+
+        self.verticalLayout_11.addWidget(self.horizontalSlider)
 
         # self.btn_more = QPushButton(self.extraTopMenu)
         # self.btn_more.setObjectName(u"btn_more")
@@ -1091,6 +1127,7 @@ class Ui_MainWindow(object):
         self.contentBottom.setObjectName(u"contentBottom")
         self.contentBottom.setFrameShape(QFrame.NoFrame)
         self.contentBottom.setFrameShadow(QFrame.Raised)
+
         self.verticalLayout_6 = QVBoxLayout(self.contentBottom)
         self.verticalLayout_6.setSpacing(0)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
@@ -1099,6 +1136,7 @@ class Ui_MainWindow(object):
         self.content.setObjectName(u"content")
         self.content.setFrameShape(QFrame.NoFrame)
         self.content.setFrameShadow(QFrame.Raised)
+
         self.horizontalLayout_4 = QHBoxLayout(self.content)
         self.horizontalLayout_4.setSpacing(0)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
@@ -1115,6 +1153,7 @@ class Ui_MainWindow(object):
         self.stackedWidget = QStackedWidget(self.pagesContainer)
         self.stackedWidget.setObjectName(u"stackedWidget")
         self.stackedWidget.setStyleSheet(u"background: transparent;")
+
         self.home = QWidget()
         self.home.setObjectName(u"home")
         self.home.setStyleSheet(u"background-image: url(:/images/images/images/PyDracula_vertical.png);\n"
@@ -1153,12 +1192,12 @@ class Ui_MainWindow(object):
         self.frame_title_wid_1.setFrameShadow(QFrame.Raised)
         self.verticalLayout_18 = QVBoxLayout(self.frame_title_wid_1)
         self.verticalLayout_18.setObjectName(u"verticalLayout_18")
-        self.labelBoxBlenderInstalation = QLabel(self.frame_title_wid_1)
-        self.labelBoxBlenderInstalation.setObjectName(u"labelBoxBlenderInstalation")
-        self.labelBoxBlenderInstalation.setFont(font)
-        self.labelBoxBlenderInstalation.setStyleSheet(u"")
-
-        self.verticalLayout_18.addWidget(self.labelBoxBlenderInstalation)
+        # self.labelBox = QLabel(self.frame_title_wid_1)
+        # self.labelBox.setObjectName(u"labelBox")
+        # self.labelBox.setFont(font)
+        # self.labelBox.setStyleSheet(u"")
+        #
+        # self.verticalLayout_18.addWidget(self.labelBox)
 
 
         self.verticalLayout_17.addWidget(self.frame_title_wid_1)
@@ -1515,7 +1554,99 @@ class Ui_MainWindow(object):
         self.verticalLayout_14.setObjectName(u"verticalLayout_14")
         self.verticalLayout_14.setContentsMargins(0, 0, 0, 0)
 
-        self.labelList = QListWidget()
+        self.fileBox = QLabel(self.topMenus)
+        self.fileBox.setObjectName(u"fileBox")
+        self.fileBox.setFont(font)
+        self.fileBox.setStyleSheet(u"")
+        self.verticalLayout_14.addWidget(self.fileBox)
+
+        self.verticalLayout_14.addWidget(self.frame_title_wid_1)
+
+        #FileBox
+        self.fileListWidget = QListWidget(self.topMenus)
+        self.fileListWidget.addItem("sparrow")
+        self.fileListWidget.addItem("robin")
+        #listWidget.itemDoubleClicked.connect(self.onClicked)
+        self.verticalLayout_14.addWidget(self.fileListWidget)
+        #self.setLayout(self.verticalLayout_14)
+        self.fileListWidget.setStyleSheet("QListWidget"
+                                  "{"
+                                  "border : 0px solid black;"
+                                  "background : rgb(30, 37, 45);"
+                                  "}"
+                                  "QListWidget QScrollBar"
+                                  "{"
+                                  "background : grey;"
+                                  "}"
+                                  "QListView::item:selected"
+                                  "{"
+                                  "border : 2px solid black;"
+                                  "background : grey;"
+                                  "}"
+                                  )
+        self.verticalLayout_14.addWidget(self.frame_title_wid_1)
+
+        self.labelBox = QLabel(self.topMenus)
+
+        self.labelBox.setFont(font2)
+        self.labelBox.setStyleSheet(u"")
+        self.verticalLayout_14.addWidget(self.labelBox)
+
+
+
+        # Label Box
+        self.listWidget = QListWidget(self.topMenus)
+        self.listWidget.setObjectName(u"labelBox")
+        self.listWidget.addItem("rectangle")
+        self.listWidget.addItem("square")
+        # listWidget.itemDoubleClicked.connect(self.onClicked)
+        self.verticalLayout_14.addWidget(self.listWidget)
+        # self.setLayout(self.verticalLayout_14)
+        self.listWidget.setStyleSheet("QListWidget"
+                                      "{"
+                                      "border : 0px solid black;"
+                                      "background : rgb(33, 37, 43);"
+                                      "}"
+                                      "QListWidget QScrollBar"
+                                      "{"
+                                      "background : grey;"
+                                      "}"
+                                      "QListView::item:selected"
+                                      "{"
+                                      "border : 2px solid black;"
+                                      "background : grey;"
+                                      "}"
+                                      )
+        self.flagBox = QLabel(self.topMenus)
+        self.flagBox.setObjectName(u"flagBox")
+        self.flagBox.setFont(font2)
+        self.flagBox.setStyleSheet(u"")
+        self.verticalLayout_14.addWidget(self.flagBox)
+
+        self.flagWidget = QListWidget(self.topMenus)
+        self.flagWidget.addItem("rectangle")
+        self.flagWidget.addItem("square")
+        # listWidget.itemDoubleClicked.connect(self.onClicked)
+        self.verticalLayout_14.addWidget(self.flagWidget)
+        # self.setLayout(self.verticalLayout_14)
+        self.flagWidget.setStyleSheet("QListWidget"
+                                      "{"
+                                      "border : 0px solid black;"
+                                      "background : rgb(31, 37, 48);"
+                                      "}"
+                                      "QListWidget QScrollBar"
+                                      "{"
+                                      "background : grey;"
+                                      "}"
+                                      "QListView::item:selected"
+                                      "{"
+                                      "border : 2px solid black;"
+                                      "background : grey;"
+                                      "}"
+                                      )
+
+
+
 
         # self.btn_message = QPushButton(self.topMenus)
         # self.btn_message.setObjectName(u"btn_message")
@@ -1553,6 +1684,8 @@ class Ui_MainWindow(object):
         #
         # self.verticalLayout_14.addWidget(self.btn_logout)
 
+
+#''''''
 
         self.verticalLayout_13.addWidget(self.topMenus, 0, Qt.AlignTop)
 
@@ -1626,8 +1759,8 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.titleLeftApp.setText(QCoreApplication.translate("MainWindow", u"PyDracula", None))
-        self.titleLeftDescription.setText(QCoreApplication.translate("MainWindow", u"Modern GUI / Flat Style", None))
+        self.titleLeftApp.setText(QCoreApplication.translate("MainWindow", u"Label Tool", None))
+        self.titleLeftDescription.setText(QCoreApplication.translate("MainWindow", u"with AI", None))
         self.toggleButton.setText(QCoreApplication.translate("MainWindow", u"Hide", None))
         self.btn_home.setText(QCoreApplication.translate("MainWindow", u"Home", None))
         self.btn_open.setText(QCoreApplication.translate("MainWindow", u"Open files", None))
@@ -1637,7 +1770,7 @@ class Ui_MainWindow(object):
         self.btn_delete.setText(QCoreApplication.translate("MainWindow", u"Delete", None))
         self.btn_polygons.setText(QCoreApplication.translate("MainWindow", u"Create Polygons", None))
         self.btn_edit.setText(QCoreApplication.translate("MainWindow", u"Edit Polygons", None))
-        self.btn_deletepolygons.setText(QCoreApplication.translate("MainWindow", u"Delete Polygons", None))
+        self.btn_deletePoint.setText(QCoreApplication.translate("MainWindow", u"Delete Point", None))
         self.btn_undo.setText(QCoreApplication.translate("MainWindow", u"Undo", None))
         self.btn_redo.setText(QCoreApplication.translate("MainWindow", u"Redo", None))
         self.toggleLeftBox.setText(QCoreApplication.translate("MainWindow", u"Left Box", None))
@@ -1649,6 +1782,7 @@ class Ui_MainWindow(object):
         #self.btn_share.setText(QCoreApplication.translate("MainWindow", u"Share", None))
         self.btn_adjustments.setText(QCoreApplication.translate("MainWindow", u"Adjustments", None))
         #self.btn_more.setText(QCoreApplication.translate("MainWindow", u"More", None))
+
         self.textEdit.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -1658,12 +1792,11 @@ class Ui_MainWindow(object):
 "<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-inde"
                         "nt:0; text-indent:0px;\"><span style=\" color:#ffffff;\">Fraunhofer License</span></p>\n"
 "<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#bd93f9;\">Created by: S. Bozhkov</span></p>\n"
-"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600; color:#ff79c6;\">Convert UI</span></p>\n"
-"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; color:#ffffff;\">pyside6-uic main.ui &gt; ui_main.py</span></p>\n"
-"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600; color:#ff79c6;\">Convert QRC</span></p>\n"
-"<p align=\"center\" "
-                        "style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; color:#ffffff;\">pyside6-rcc resources.qrc -o resources_rc.py</span></p></body></html>", None))
-        self.titleRightInfo.setText(QCoreApplication.translate("MainWindow", u"PyDracula APP - Theme with colors based on Dracula for Python.", None))
+#"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600; color:#ff79c6;\">Convert UI</span></p>\n"
+#"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; color:#ffffff;\">pyside6-uic main.ui &gt; ui_main.py</span></p>\n"
+#"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600; color:#ff79c6;\">Convert QRC</span></p>\n"
+"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; color:#ffffff;\"></span></p></body></html>", None))
+        self.titleRightInfo.setText(QCoreApplication.translate("MainWindow", u"Labeling app", None))
 #if QT_CONFIG(tooltip)
         self.settingsTopBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Settings", None))
 #endif // QT_CONFIG(tooltip)
@@ -1680,7 +1813,9 @@ class Ui_MainWindow(object):
         self.closeAppBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Close", None))
 #endif // QT_CONFIG(tooltip)
         self.closeAppBtn.setText("")
-        self.labelBoxBlenderInstalation.setText(QCoreApplication.translate("MainWindow", u"FILE BOX", None))
+        self.fileBox.setText(QCoreApplication.translate("MainWindow", u"File Box", None))
+        self.labelBox.setText(QCoreApplication.translate("MainWindow", u"Label Box", None))
+        self.flagBox.setText(QCoreApplication.translate("MainWindow" , u"Flag Box" , None))
         self.lineEdit.setText("")
         self.lineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type here", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Open", None))
@@ -1690,6 +1825,8 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Test 1", None))
         self.comboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Test 2", None))
         self.comboBox.setItemText(2, QCoreApplication.translate("MainWindow", u"Test 3", None))
+
+
 
         self.commandLinkButton.setText(QCoreApplication.translate("MainWindow", u"Link Button", None))
         self.commandLinkButton.setDescription(QCoreApplication.translate("MainWindow", u"Link description", None))
